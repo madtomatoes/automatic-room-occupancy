@@ -176,8 +176,8 @@ trigger:
       minutes: "{{ states('input_number.door_occupancy_timeout') | int(0) }}"
   - platform: state
     entity_id: !input "motion_sensor"
+    duration: '00:00:05'
     to: "on"
-    duration: "00:00:05"
   - platform: state
     entity_id: !input "motion_sensor"
     to: "off"
