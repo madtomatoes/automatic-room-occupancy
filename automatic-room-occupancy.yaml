@@ -1,5 +1,5 @@
 blueprint:
-  name: "[Occupancy] Auto Room Occupancy"
+  name: "[Occupancy] Auto Room Occupancy JS"
   description:
     "Automatically turn on and off an ocupancy switch for a single room.\n
     \n------LOGIC------\nOccupied when ANY of the following conditions are met (all are\
