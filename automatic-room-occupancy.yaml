@@ -93,14 +93,14 @@ blueprint:
     household_group:
       name: Household Group (Optional)
       description: A grouped set of people in your house. Logic will only run if home.
-      default: group.household
+      default: none
       selector:
         entity:
           domain: group
     guest_mode_switch:
       name: Guest Mode (Optional)
       description: An input_boolean to allow logic to work when household group is away.
-      default: input_boolean.guest
+      default: none
       selector:
         entity:
           domain: input_boolean
@@ -177,6 +177,7 @@ trigger:
   - platform: state
     entity_id: !input "motion_sensor"
     to: "on"
+    duration: "00:00:05"
   - platform: state
     entity_id: !input "motion_sensor"
     to: "off"
