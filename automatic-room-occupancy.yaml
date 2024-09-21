@@ -45,6 +45,7 @@ blueprint:
       selector:
         entity:
           domain: binary_sensor
+          device_class: opening
     occupied_on_media_enabled:
       name: Enable Media Occupancy
       description: Turn on/off occupancy via media player(s).
@@ -146,8 +147,7 @@ variables:
     }}"
   is_motion: "{{ is_state(motion_sensor, 'on') }}"
   door_sensor: !input "door_sensor"
-  door_open: "{{ is_state(door_sensor, 'open') }}"
-  door_shut: "{{ is_state(door_sensor, 'closed') }}"
+  door_shut: "{{ is_state(door_sensor, 'off') }}"
   occupied_on_motion_enabled: !input "occupied_on_motion_enabled"
   occupied_on_shut_door_enabled: !input "occupied_on_shut_door"
   occupied_on_media_enabled: !input "occupied_on_media_enabled"
@@ -168,12 +168,12 @@ mode: parallel
 trigger:
   - platform: state
     entity_id: !input "door_sensor"
-    to: "open"
+    to: "off"
   - platform: state
     entity_id: !input "door_sensor"
-    to: "closed"
-#    for:
-#      minutes: "{{ states('input_number.door_occupancy_timeout') | int(0) }}"
+    to: "on"
+    for:
+      minutes: "{{ states('input_number.door_occupancy_timeout') | int(0) }}"
   - platform: state
     entity_id: !input "motion_sensor"
     to: "on"
@@ -194,8 +194,8 @@ action:
   - choose:
       - conditions:
           - "{{ occupied_on_shut_door_enabled }}"
-          - "{{ door_open }}"
-#          - "{{ at_home }}"
+          - "{{ door_shut }}"
+          - "{{ at_home }}"
         sequence:
           - service: input_boolean.turn_on
             data:
@@ -203,7 +203,7 @@ action:
       - conditions:
           - "{{ occupied_on_motion_enabled }}"
           - "{{ is_motion }}"
-#          - "{{ at_home }}"
+          - "{{ at_home }}"
         sequence:
           - service: input_boolean.turn_on
             data:
@@ -211,7 +211,7 @@ action:
       - conditions:
           - "{{ occupied_on_media_enabled }}"
           - "{{ media_is_playing }}"
-#          - "{{ at_home }}"
+          - "{{ at_home }}"
         sequence:
           - service: input_boolean.turn_on
             data:
@@ -219,13 +219,13 @@ action:
       - conditions:
           - "{{ occupied_on_presence_enabled }}"
           - "{{ in_room }}"
-#          - "{{ at_home }}"
+          - "{{ at_home }}"
         sequence:
           - service: input_boolean.turn_on
             data:
               entity_id: !input "occupancy_switch"
       - conditions:
-#          - "{{ not at_home }}"
+          - "{{ not at_home }}"
         sequence:
           - service: input_boolean.turn_off
             data:
