@@ -45,7 +45,6 @@ blueprint:
       selector:
         entity:
           domain: binary_sensor
-#          device_class: opening
     occupied_on_media_enabled:
       name: Enable Media Occupancy
       description: Turn on/off occupancy via media player(s).
@@ -205,7 +204,6 @@ action:
       - conditions:
           - "{{ occupied_on_shut_door_enabled }}"
           - "{{ door_open }}"
-#          - "{{ at_home }}"
         sequence:
           - service: input_boolean.turn_on
             data:
@@ -213,7 +211,6 @@ action:
       - conditions:
           - "{{ occupied_on_motion_enabled }}"
           - "{{ is_motion }}"
-#          - "{{ at_home }}"
         sequence:
           - service: input_boolean.turn_on
             data:
@@ -221,7 +218,6 @@ action:
       - conditions:
           - "{{ occupied_on_media_enabled }}"
           - "{{ media_is_playing }}"
-#          - "{{ at_home }}"
         sequence:
           - service: input_boolean.turn_on
             data:
@@ -229,17 +225,10 @@ action:
       - conditions:
           - "{{ occupied_on_presence_enabled }}"
           - "{{ in_room }}"
-#          - "{{ at_home }}"
         sequence:
           - service: input_boolean.turn_on
             data:
               entity_id: !input "occupancy_switch"
-  #    - conditions:
-  #        - "{{ not at_home }}"
-  #      sequence:
-  #        - service: input_boolean.turn_off
-  #          data:
-  #            entity_id: !input "occupancy_switch"
       - conditions:
           - "{{ not is_motion }}"
           - "{{ door_shut }}"
