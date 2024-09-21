@@ -146,6 +146,7 @@ variables:
     }}"
   is_motion: "{{ is_state(motion_sensor, 'on') }}"
   door_sensor: !input "door_sensor"
+  door_open: "{{ is_state(door_sensor, 'open') }}"
   door_shut: "{{ is_state(door_sensor, 'closed') }}"
   occupied_on_motion_enabled: !input "occupied_on_motion_enabled"
   occupied_on_shut_door_enabled: !input "occupied_on_shut_door"
@@ -193,7 +194,7 @@ action:
   - choose:
       - conditions:
           - "{{ occupied_on_shut_door_enabled }}"
-          - "{{ door_shut }}"
+          - "{{ door_open }}"
 #          - "{{ at_home }}"
         sequence:
           - service: input_boolean.turn_on
