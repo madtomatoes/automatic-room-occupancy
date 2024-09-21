@@ -148,6 +148,16 @@ variables:
   is_motion: "{{ is_state(motion_sensor, 'on') }}"
   door_sensor: !input "door_sensor"
   door_shut: "{{ is_state(door_sensor, 'off') }}"
+  door_open: "{{ is_state(door_sensor, 'on') }}"
+  door_timeout:
+    "{{ states('input_number.door_occupancy_timeout') | float(10)
+    }}"
+  door_last_changed:
+    "{{ states[door_sensor].last_changed.timestamp() | float(0)
+    }}"
+  door_is_timed_out:
+    "{{ (time_now - door_last_changed) > (motion_timeout * 60)
+    }}"
   occupied_on_motion_enabled: !input "occupied_on_motion_enabled"
   occupied_on_shut_door_enabled: !input "occupied_on_shut_door"
   occupied_on_media_enabled: !input "occupied_on_media_enabled"
@@ -172,14 +182,19 @@ trigger:
   - platform: state
     entity_id: !input "door_sensor"
     to: "on"
-    for:
-      minutes: "{{ states('input_number.door_occupancy_timeout') | int(0) }}"
+#    for:
+#      minutes: "{{ states('input_number.door_occupancy_timeout') | int(0) }}"
   - platform: state
     entity_id: !input "motion_sensor"
     to: "on"
     for: '00:00:05'
   - platform: state
     entity_id: !input "motion_sensor"
+    to: "off"
+    for:
+      minutes: "{{ states('input_number.motion_occupancy_timeout') | int(10) }}"
+  - platform: state
+    entity_id: !input "door_sensor"
     to: "off"
     for:
       minutes: "{{ states('input_number.motion_occupancy_timeout') | int(10) }}"
@@ -194,8 +209,8 @@ action:
   - choose:
       - conditions:
           - "{{ occupied_on_shut_door_enabled }}"
-          - "{{ door_shut }}"
-          - "{{ at_home }}"
+          - "{{ door_open }}"
+#          - "{{ at_home }}"
         sequence:
           - service: input_boolean.turn_on
             data:
@@ -203,7 +218,7 @@ action:
       - conditions:
           - "{{ occupied_on_motion_enabled }}"
           - "{{ is_motion }}"
-          - "{{ at_home }}"
+#          - "{{ at_home }}"
         sequence:
           - service: input_boolean.turn_on
             data:
@@ -211,7 +226,7 @@ action:
       - conditions:
           - "{{ occupied_on_media_enabled }}"
           - "{{ media_is_playing }}"
-          - "{{ at_home }}"
+#          - "{{ at_home }}"
         sequence:
           - service: input_boolean.turn_on
             data:
@@ -219,20 +234,22 @@ action:
       - conditions:
           - "{{ occupied_on_presence_enabled }}"
           - "{{ in_room }}"
-          - "{{ at_home }}"
+#          - "{{ at_home }}"
         sequence:
           - service: input_boolean.turn_on
             data:
               entity_id: !input "occupancy_switch"
-      - conditions:
-          - "{{ not at_home }}"
-        sequence:
-          - service: input_boolean.turn_off
-            data:
-              entity_id: !input "occupancy_switch"
+  #    - conditions:
+  #        - "{{ not at_home }}"
+  #      sequence:
+  #        - service: input_boolean.turn_off
+  #          data:
+  #            entity_id: !input "occupancy_switch"
       - conditions:
           - "{{ not is_motion }}"
-          - "{{ motion_is_timed_out }}"
+          - "{{ door_shut }}"
+          - "{{ motion_is_timed_out }}
+          - "{{ door_is_timed_out }}
           - "{% set t = (time_now - media_timeout) * 60 %} {% set ns = namespace(not_playing=[])\
             \ %} {% for player in media_players %}\n  {% for state in media_states %}\n\
             \    {% if states[player].last_changed is defined %}\n      {% set timed_out\
