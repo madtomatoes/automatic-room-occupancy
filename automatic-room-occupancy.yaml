@@ -168,10 +168,10 @@ mode: parallel
 trigger:
   - platform: state
     entity_id: !input "door_sensor"
-    to: "Closed"
+    to: "off"
   - platform: state
     entity_id: !input "door_sensor"
-    to: "Open"
+    to: "on"
     for:
       minutes: "{{ states('input_number.door_occupancy_timeout') | int(0) }}"
   - platform: state
