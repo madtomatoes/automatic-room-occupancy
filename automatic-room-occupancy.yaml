@@ -146,7 +146,7 @@ variables:
     }}"
   is_motion: "{{ is_state(motion_sensor, 'on') }}"
   door_sensor: !input "door_sensor"
-  door_shut: "{{ is_state(door_sensor, 'off') }}"
+  door_shut: "{{ is_state(door_sensor, 'closed') }}"
   occupied_on_motion_enabled: !input "occupied_on_motion_enabled"
   occupied_on_shut_door_enabled: !input "occupied_on_shut_door"
   occupied_on_media_enabled: !input "occupied_on_media_enabled"
@@ -167,10 +167,10 @@ mode: parallel
 trigger:
   - platform: state
     entity_id: !input "door_sensor"
-    to: "off"
+    to: "closed"
   - platform: state
     entity_id: !input "door_sensor"
-    to: "on"
+    to: "open"
     for:
       minutes: "{{ states('input_number.door_occupancy_timeout') | int(0) }}"
   - platform: state
