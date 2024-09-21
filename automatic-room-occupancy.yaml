@@ -179,6 +179,8 @@ trigger:
   - platform: state
     entity_id: !input "door_sensor"
     to: "off"
+    for:
+      minutes: "{{ states('input_number.motion_occupancy_timeout') | int(10) }}"
   - platform: state
     entity_id: !input "door_sensor"
     to: "on"
@@ -188,11 +190,6 @@ trigger:
     for: '00:00:05'
   - platform: state
     entity_id: !input "motion_sensor"
-    to: "off"
-    for:
-      minutes: "{{ states('input_number.motion_occupancy_timeout') | int(10) }}"
-  - platform: state
-    entity_id: !input "door_sensor"
     to: "off"
     for:
       minutes: "{{ states('input_number.motion_occupancy_timeout') | int(10) }}"
