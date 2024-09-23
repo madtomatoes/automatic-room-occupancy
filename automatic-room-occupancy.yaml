@@ -186,7 +186,7 @@ trigger:
   - platform: state
     entity_id: !input "motion_sensor"
     to: "on"
-    for: '00:00:05'
+    for: "00:00:05"
   - platform: state
     entity_id: !input "motion_sensor"
     to: "off"
