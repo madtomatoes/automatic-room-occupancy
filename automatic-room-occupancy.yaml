@@ -231,7 +231,6 @@ action:
               entity_id: !input "occupancy_switch"
       - conditions:
           - "{{ not is_motion }}"
-          - "{{ door_shut }}"
           - "{{ motion_is_timed_out }}"
           - "{{ door_is_timed_out }}"
           - "{% set t = (time_now - media_timeout) * 60 %} {% set ns = namespace(not_playing=[])\
