@@ -152,7 +152,7 @@ variables:
     "{{ states('input_number.door_occupancy_timeout') | float(10)
     }}"
   door_last_changed:
-    "{{ states[door_sensor].last_changed.timestamp() | float(0)
+    "{{ states[door_sensor].last_changed.timestamp() | default(float(0))
     }}"
   door_is_timed_out:
     "{{ (time_now - door_last_changed) > (motion_timeout * 60)
